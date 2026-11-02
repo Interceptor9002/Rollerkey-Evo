@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="theme-color" content="#000000">
+<title>RollerKey Evo</title>
+<link rel="manifest" href="manifest.json">
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;background:#000;color:#3dff8b;
+  font:14px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace}
+body{padding:14px 14px 40px;max-width:720px;margin:0 auto}
+h1{font-size:16px;letter-spacing:.22em;margin:0;color:#3dff8b;font-weight:600}
+h1 span{color:#1c7a45;font-weight:400}
+#status{margin:8px 0 14px;font-size:12px;color:#1c7a45;letter-spacing:.06em;min-height:34px}
+#status.ok{color:#3dff8b}
+#status.warn{color:#ffd34d}
+#status.err{color:#ff5f5f}
+section{border:1px solid #0d3d22;border-radius:10px;padding:12px;margin:0 0 14px;background:#020804}
+section.hot{border-color:#1c7a45;background:#03170d}
+h2{font-size:11px;letter-spacing:.2em;color:#1c7a45;margin:0 0 10px;font-weight:600}
+.row{display:flex;justify-content:space-between;gap:10px;font-size:12px;padding:5px 0;border-bottom:1px dotted #0a2b18}
+.row:last-of-type{border-bottom:0}
+.row span{color:#1c7a45}
+.row b{color:#3dff8b;font-weight:500;text-align:right;word-break:break-all}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+button{font:inherit;font-size:11px;letter-spacing:.12em;padding:11px 8px;border-radius:8px;
+  background:#03170d;color:#3dff8b;border:1px solid #0d3d22;cursor:pointer}
+button:active{background:#072a17}
+button:disabled{opacity:.3}
+button.wide{grid-column:1/-1}
+button.big{padding:18px 8px;font-size:14px;letter-spacing:.2em;border-color:#1c7a45}
+button.danger{color:#ff9a9a;border-color:#3d1010;background:#170303}
+input,textarea{width:100%;font:inherit;font-size:14px;padding:12px;border-radius:8px;
+  background:#020804;color:#3dff8b;border:1px solid #0d3d22;margin-top:8px}
+textarea{min-height:66px;resize:vertical;font-size:12px}
+input::placeholder,textarea::placeholder{color:#164a2a}
+#log{font-size:11px;line-height:1.55;height:170px;overflow:auto;background:#010402;
+  border:1px solid #0a2b18;border-radius:8px;padding:8px;white-space:pre-wrap;word-break:break-all}
+#log div{color:#1c7a45}
+#log div.g{color:#3dff8b}
+#log div.y{color:#ffd34d}
+#log div.e{color:#ff5f5f}
+#log div.h{color:#8affc0}
+.hint{font-size:10px;color:#12401f;margin-top:8px;line-height:1.55}
+.hint b{color:#ffd34d}
+video{width:100%;border-radius:8px;margin-top:8px;background:#000;display:none}
+#qrbox{font-size:11px;color:#1c7a45;margin-top:8px;word-break:break-all;min-height:14px}
+#bt{font-size:11px;margin-top:8px;color:#1c7a45}
+#bt.on{color:#3dff8b}
+hr{border:0;border-top:1px dotted #0a2b18;margin:12px 0}
+.brands{display:flex;gap:6px;margin-top:9px}
+.brands button{flex:1;padding:8px 4px;font-size:10px;opacity:.5}
+.brands button.on{opacity:1;border-color:#3dff8b;color:#3dff8b;background:#072a17}
+.card{position:relative;border-radius:15px;padding:15px 16px 13px;margin-top:10px;
+  background:
+    radial-gradient(120% 90% at 88% 6%,rgba(61,255,139,.20),transparent 58%),
+    linear-gradient(140deg,#07281a 0%,#03170d 46%,#0a3a20 100%);
+  border:1px solid #1c7a45;box-shadow:0 0 0 1px #04120a inset,0 8px 24px rgba(0,0,0,.7);
+  overflow:hidden}
+.card::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:repeating-linear-gradient(115deg,transparent 0 22px,rgba(61,255,139,.05) 22px 23px)}
+.card .crow{display:flex;align-items:center;justify-content:space-between}
+.chip{width:34px;height:25px;border-radius:5px;
+  background:linear-gradient(135deg,#d8ffd0,#4d8f5f 55%,#9fe8ad);
+  box-shadow:0 0 6px rgba(61,255,139,.45) inset}
+.chip::before{content:"";display:block;height:1px;background:#0a3a1f;margin:11px 0 0;opacity:.6}
+.brand{font-style:italic;font-weight:700;letter-spacing:.16em;font-size:15px;color:#8affc0;
+  text-shadow:0 0 10px rgba(61,255,139,.5)}
+.cnum{margin:16px 0 12px;font-size:16px;letter-spacing:.15em;color:#d6ffe6;
+  text-shadow:0 0 12px rgba(61,255,139,.35);word-spacing:.35em}
+.cfoot{display:flex;justify-content:space-between;align-items:flex-end;gap:8px}
+.clab{font-size:8px;letter-spacing:.2em;color:#2d8a53}
+.cval{font-size:11px;color:#9ff5c2;letter-spacing:.09em}
+.camt{text-align:right}
+.camt .cval{font-size:15px;color:#3dff8b;letter-spacing:.05em;
+  text-shadow:0 0 12px rgba(61,255,139,.6)}
+.card.off{opacity:.42;filter:saturate(.4)}
+</style>
+</head>
+<body>
+
+<h1>ROLLERKEY <span>BETA 2</span></h1>
+<div id="status">startet …</div>
+
+<section class="hot">
+  <h2>ROLLER</h2>
+  <div id="bt">nicht verbunden</div>
+  <div class="brands">
+    <button data-b="lime" class="on">LIME</button>
+    <button data-b="voi">VOI</button>
+    <button data-b="bolt">BOLT</button>
+  </div>
+  <div class="grid">
+    <button id="bScan">QR SCANNEN</button>
+    <button id="bConn">VERBINDEN</button>
+    <button class="wide big" id="bUnlock">ENTSPERREN</button>
+    <button class="wide" id="bLock">SPERREN</button>
+  </div>
+  <video id="cam" playsinline muted></video>
+  <div id="qrbox"></div>
+  <div class="hint">Entsperren läuft rein über Bluetooth, ohne Konto und ohne Netz.<br>
+  <b>Fragt iOS nach einem Code: Nummer vom Roller-Display eingeben und „Koppeln" tippen. Ohne Display: 000000.</b><br>
+  Nach der ersten Kopplung fragt iOS bei diesem Roller nicht mehr.</div>
+</section>
+
+<section>
+  <h2>KONTO</h2>
+  <div class="card" id="cardBox">
+    <div class="crow"><span class="chip"></span><span class="brand">VISA</span></div>
+    <div class="cnum" id="cNum">•••• •••• •••• ••••</div>
+    <div class="cfoot">
+      <div><div class="clab">GÜLTIG</div><div class="cval" id="cExp">--/--</div></div>
+      <div><div class="clab">INHABER</div><div class="cval">LIME RIDER</div></div>
+      <div class="camt"><div class="clab">RAHMEN</div><div class="cval" id="cAmt">50,00 €</div></div>
+    </div>
+  </div>
+  <div class="row"><span>Postfach</span><b id="uMail">–</b></div>
+  <div class="row"><span>Guthaben</span><b id="uBal">–</b></div>
+  <div class="row"><span>Karte</span><b id="uCard">–</b></div>
+  <div class="grid">
+    <button id="bNew">NEUES KONTO</button>
+    <button id="bBal">GUTHABEN PRÜFEN</button>
+    <button id="bCode">CODES EINLÖSEN</button>
+    <button id="bCard">KARTE HINTERLEGEN</button>
+  </div>
+  <div class="hint">Guthaben 0,00 € ist normal: Promos geben Minuten, kein Geld. Gefahren wird über die Karte.
+  Nach jeder Fahrt reicht die Karte nicht mehr — dann NEUES KONTO. Unter 0,50 € passiert das automatisch.</div>
+  <hr>
+  <h2>NOTFALLWEG</h2>
+  <input id="iOwn" type="email" inputmode="email" placeholder="eigene E-Mail-Adresse" autocomplete="email">
+  <button class="wide" id="bOwn" style="margin-top:8px">LINK ANFORDERN</button>
+  <button class="wide" id="bWeb" style="margin-top:8px">LIME IM SAFARI ÖFFNEN</button>
+  <textarea id="iLink" placeholder="Link aus der Mail hier einfügen"></textarea>
+  <button class="wide" id="bLink" style="margin-top:8px">LINK EINLÖSEN</button>
+</section>
+
+<section>
+  <h2>KONSOLE</h2>
+  <div id="log"></div>
+  <div class="grid">
+    <button id="bCopy">KOPIEREN</button>
+    <button id="bClear">LEEREN</button>
+  </div>
+</section>
+
+<section>
+  <h2>WARTUNG</h2>
+  <div class="grid">
+    <button id="bRelay">VERBINDUNG TESTEN</button>
+    <button id="bReset" class="danger">ZURÜCKSETZEN</button>
+  </div>
+  <input id="iPk" placeholder="optional: Stripe-Schlüssel pk_live_…">
+  <button class="wide" id="bPk" style="margin-top:8px">SCHLÜSSEL SPEICHERN</button>
+</section>
+
+<script>
+"use strict";
+
+/* ══════════ GRUNDLAGEN ══════════ */
+
+const L = "https://web-production.lime.bike/api/rider/v1";
+const WEB = "https://web-production.lime.bike/";
+const GM = "https://api.guerrillamail.com/ajax.php";
+const H = {"Content-Type":"application/json","Accept":"application/json"};
+const LOW = 50;
+const LIMIT = 5000;
+const RENEW_COOL = 60000;
+
+const S = {
+  busy:false, prov:false, acct:null, card:null, pk:"", mail:"", brand:"lime",
+  dev:null, chans:[], notes:0, fails:0, picking:false, cam:null, raf:0,
+  deadCh:{}, jinaAt:0, renewAt:0, promoPath:""
+};
+
+const $ = id => document.getElementById(id);
+
+function save(k,v){ try{ localStorage.setItem("rk2_"+k, JSON.stringify(v)) }catch(_){} }
+function load(k,d){ try{ const r=localStorage.getItem("rk2_"+k); return r===null?d:JSON.parse(r) }catch(_){ return d } }
+function drop(k){ try{ localStorage.removeItem("rk2_"+k) }catch(_){} }
+const sleep = ms => new Promise(r=>setTimeout(r,ms));
+const money = c => (c/100).toFixed(2).replace(".",",")+" €";
+const cut = (s, n) => String(s || "").replace(/\s+/g," ").slice(0, n || 110);
+
+function log(t, c){
+  const d = document.createElement("div");
+  if(c) d.className = c;
+  const n = new Date();
+  d.textContent = String(n.getHours()).padStart(2,"0")+":"+String(n.getMinutes()).padStart(2,"0")+":"+String(n.getSeconds()).padStart(2,"0")+" "+t;
+  const box = $("log");
+  box.appendChild(d);
+  box.scrollTop = box.scrollHeight;
+  while(box.children.length > 400) box.removeChild(box.firstChild);
+}
+function stat(t, c){ $("status").textContent = t; $("status").className = c || "" }
+const err = e => (e && e.message) ? e.message : String(e);
+
+function guard(fn){
+  return async function(){
+    if(S.busy) return;
+    S.busy = true; paint();
+    try{ await fn.apply(this, arguments) }
+    catch(e){ log("Fehler: "+err(e), "e"); stat("Fehler: "+err(e), "err") }
+    finally{ S.busy = false; paint() }
+  };
+}
+
+window.addEventListener("error", e => log("JS: "+(e.message||"Fehler"), "e"));
+window.addEventListener("unhandledrejection", e => log("Promise: "+err(e.reason), "e"));
+
+/* ══════════ NETZWERK ══════════ */
+
+const enc = s => new TextEncoder().encode(s);
+
+async function jinaWait(){
+  const d = Date.now() - S.jinaAt;
+  if(d < 1300) await sleep(1300 - d);
+  S.jinaAt = Date.now();
+}
+
+async function one(u, o, ms){
+  const ctl = new AbortController();
+  const id = setTimeout(() => ctl.abort(), ms);
+  try{
+    const r = await fetch(u, {
+      method: o.method || "GET",
+      headers: o.headers || (o.method && o.method !== "GET" ? H : {}),
+      body: o.body, signal: ctl.signal, cache: "no-store"
+    });
+    clearTimeout(id);
+    return r;
+  }catch(e){ clearTimeout(id); throw e }
+}
+
+const GETR = [
+  u => "https://r.jina.ai/" + u,
+  u => "https://thingproxy.freeboard.io/fetch/" + u,
+  u => "https://proxy.corsfix.com/?" + u,
+  u => "https://api.allorigins.win/raw?url=" + encodeURIComponent(u)
+];
+
+const POSTR = [
+  u => u,
+  u => "https://thingproxy.freeboard.io/fetch/" + u,
+  u => "https://proxy.corsfix.com/?" + u,
+  u => "https://test.cors.workers.dev/?" + u,
+  u => "https://cors.isomorphic-git.org/" + u,
+  u => "https://api.cors.lol/?url=" + encodeURIComponent(u)
+];
+
+async function reqGet(url, ms){
+  ms = ms || 8000;
+  let last = null;
+  for(const f of GETR){
+    const u = f(url);
+    if(u === "https://r.jina.ai/" + url) await jinaWait();
+    try{
+      const r = await one(u, {}, ms);
+      if(u !== url && (r.status === 405 || r.status === 429 || r.status >= 500)){
+        last = new Error("HTTP " + r.status);
+        continue;
+      }
+      return r;
+    }catch(e){ last = e }
+  }
+  throw last || new Error("Netzwerk");
+}
+
+async function reqSend(url, method, body, headers, ms){
+  ms = ms || 11000;
+  const urls = POSTR.map(f => f(url));
+  return new Promise((res, rej) => {
+    let open = urls.length, done = false, last = null;
+    const fail = e => { if(!done && --open === 0){ done = true; rej(e || new Error("Netzwerk")) } };
+    urls.forEach(u => {
+      one(u, {method, headers, body}, ms).then(r => {
+        if(done) return;
+        if(r.status === 405 || r.status === 429 || r.status >= 500){ last = new Error("HTTP " + r.status); fail(last); return }
+        done = true; res(r);
+      }).catch(e => { last = e; fail(last) });
+    });
+  });
+}
+
+const reqPost = (url, body, headers, ms) => reqSend(url, "POST", body, headers, ms);
+
+function parseLoose(t){
+  const s = t.indexOf("{"), a = t.indexOf("[");
+  let from = -1;
+  if(s >= 0 && (a < 0 || s < a)) from = s; else if(a >= 0) from = a;
+  if(from < 0) return null;
+  const to = Math.max(t.lastIndexOf("}"), t.lastIndexOf("]"));
+  if(to <= from) return null;
+  try{ return JSON.parse(t.slice(from, to + 1)) }catch(_){ return null }
+}
+
+async function reqJson(url, o, ms){
+  o = o || {};
+  let lastErr = null;
+  for(let i = 0; i < 2; i++){
+    let r;
+    try{
+      r = o.method && o.method !== "GET"
+        ? await reqSend(url, o.method, o.body, o.headers, ms)
+        : await reqGet(url, ms);
+    }catch(e){ lastErr = e; await sleep(500); continue }
+    let t = "";
+    try{ t = await r.text() }catch(e){ lastErr = e; continue }
+    if(/rate limit/i.test(t.slice(0, 140))){ lastErr = new Error("Rate-Limit"); await sleep(3000); continue }
+    const j = parseLoose(t);
+    if(j) return j;
+    lastErr = new Error("Antwort unlesbar");
+    await sleep(400);
+  }
+  throw lastErr || new Error("Netzwerk");
+}
+
+/* ══════════ POSTFÄCHER ══════════ */
+
+const rnd = n => Array.from({length:n}, () => "abcdefghijkmnpqrstuvwxyz23456789"[Math.floor(Math.random()*32)]).join("");
+
+async function mailGuerrilla(){
+  const j = await reqJson(GM + "?f=get_email_address&lang=en", {}, 9000);
+  if(!j.email_addr || !j.sid_token) throw new Error("keine Adresse");
+  const sid = j.sid_token;
+  return {
+    addr: j.email_addr,
+    wait: async ms => {
+      const end = Date.now() + ms;
+      let r = 0;
+      while(Date.now() < end && r < 7){
+        r++;
+        await sleep(6000);
+        try{
+          const l = await reqJson(GM + "?f=get_email_list&sid_token=" + encodeURIComponent(sid) + "&offset=0", {}, 9000);
+          for(const m of (l.list || [])){
+            if(!m.mail_id) continue;
+            const d = await reqJson(GM + "?f=fetch_email&sid_token=" + encodeURIComponent(sid) + "&email_id=" + encodeURIComponent(m.mail_id), {}, 9000);
+            const b = [d.mail_subject, d.mail_body].filter(Boolean).join("\n");
+            if(b && b.length > 20) return b;
+          }
+        }catch(_){}
+      }
+      return null;
+    }
+  };
+}
+
+async function mailLol(){
+  const j = await reqJson("https://api.tempmail.lol/v2/inbox/create", {method:"POST", headers:H, body:"{}"}, 10000);
+  if(!j.address || !j.token) throw new Error("keine Adresse");
+  const tok = j.token;
+  return {
+    addr: j.address,
+    wait: async ms => {
+      const end = Date.now() + ms;
+      while(Date.now() < end){
+        await sleep(5000);
+        try{
+          const g = await reqJson("https://api.tempmail.lol/v2/inbox?token=" + encodeURIComponent(tok), {}, 9000);
+          for(const m of (g.emails || [])){
+            const b = [m.subject, m.body, m.html].filter(Boolean).join("\n");
+            if(b) return b;
+          }
+        }catch(_){}
+      }
+      return null;
+    }
+  };
+}
+
+async function mailTm(){
+  const j = await reqJson("https://api.mail.tm/domains", {}, 9000);
+  const list = j["hydra:member"] || [];
+  const dom = list[0] && list[0].domain;
+  if(!dom) throw new Error("keine Domain");
+  const addr = rnd(10) + "@" + dom, pw = rnd(14);
+  const c = await reqPost("https://api.mail.tm/accounts", JSON.stringify({address:addr, password:pw}), H, 10000);
+  if(!c.ok && c.status !== 422) throw new Error("Konto HTTP " + c.status);
+  const t = await reqJson("https://api.mail.tm/token", {method:"POST", headers:H,
+    body: JSON.stringify({address:addr, password:pw})}, 10000);
+  if(!t.id) throw new Error("kein Token");
+  const auth = { Authorization:"Bearer " + t.id };
+  return {
+    addr,
+    wait: async ms => {
+      const end = Date.now() + ms;
+      while(Date.now() < end){
+        await sleep(6000);
+        try{
+          const m = await reqJson("https://api.mail.tm/messages?page=1", {headers:auth}, 9000);
+          for(const it of (m["hydra:member"] || [])){
+            const d = await reqJson("https://api.mail.tm/messages/" + it.id, {headers:auth}, 9000);
+            const b = [d.subject, d.text, d.html].filter(Boolean).join("\n");
+            if(b) return b;
+          }
+        }catch(_){}
+      }
+      return null;
+    }
+  };
+}
+
+/* ══════════ LIME ══════════ */
+
+const authH = t => ({ "Content-Type":"application/json", "Accept":"application/json", "Authorization":"Bearer " + t });
+
+function pickBalance(o){
+  if(!o) return null;
+  for(const c of [o.balance_cents, o.attributes && o.attributes.balance_cents,
+    o.wallet && o.wallet.balance_cents, o.data && o.data.attributes && o.data.attributes.balance_cents]){
+    if(typeof c === "number") return c;
+  }
+  return null;
+}
+
+async function wallet(t){
+  try{
+    const r = await reqSend(L + "/wallet", "GET", "", authH(t), 10000);
+    if(!r.ok) return null;
+    const j = parseLoose(await r.text());
+    return j ? (pickBalance(j) ?? pickBalance(j.data)) : null;
+  }catch(_){ return null }
+}
+
+async function riderCheck(t){
+  for(let i = 0; i < 2; i++){
+    try{
+      const r = await reqSend(L + "/rider", "GET", "", authH(t), 10000);
+      if(r.ok){
+        const j = parseLoose(await r.text());
+        if(j) return { ok:true, user: j.user || (j.data && j.data.attributes) || j };
+      }
+      if(r.status === 401 || r.status === 403) return { ok:false, code:r.status };
+    }catch(_){}
+    await sleep(400);
+  }
+  return { ok:false, code:0 };
+}
+
+async function killAccount(t){
+  if(!t) return false;
+  for(const [p, m] of [["/rider", "DELETE"], ["/account", "DELETE"], ["/rider/delete", "POST"]]){
+    try{
+      const r = await reqSend(L + p, m, m === "POST" ? "{}" : "", authH(t), 8000);
+      if(r.ok){ log("Altes Konto bei Lime gelöscht.", "g"); return true }
+    }catch(_){}
+  }
+  return false;
+}
+
+async function redeem(t, code){
+  const paths = S.promoPath ? [S.promoPath] : ["/promos/redeem", "/promos"];
+  for(const p of paths){
+    try{
+      const r = await reqPost(L + p, JSON.stringify({promo_code:code, code:code}), authH(t), 10000);
+      if(!r.ok) continue;
+      const j = parseLoose(await r.text());
+      if(!j) continue;
+      if(j.error || (Array.isArray(j.errors) && j.errors.length)) continue;
+      S.promoPath = p;
+      return true;
+    }catch(_){}
+  }
+  return false;
+}
+
+async function redeemAll(t){
+  let n = 0;
+  for(const c of ["10MINFREE","5UNLOCKSFREE","RB232CC","6YQZFFM","4AG57PZ"]){
+    try{ if(await redeem(t, c)) n++ }catch(_){}
+    await sleep(300);
+  }
+  return n;
+}
+
+function grabToken(text){
+  if(!text) return "";
+  for(const p of [
+    /[?&](?:token|login_token|t|access_token)=([A-Za-z0-9._\-]{20,})/,
+    /\beyJ[A-Za-z0-9._\-]{30,}/,
+    /"token"\s*:\s*"([^"]{20,})"/
+  ]){
+    const m = text.match(p);
+    if(m) return m[1] || m[0];
+  }
+  return "";
+}
+
+async function requestLink(addr){
+  for(const b of [{user:{email:addr}}, {email:addr}, {login:{email:addr}}]){
+    try{
+      const r = await reqPost(L + "/login", JSON.stringify(b), H, 12000);
+      if(!r.ok) continue;
+      const j = parseLoose(await r.text());
+      if(j && j.token) return { token:j.token };
+      return { sent:true };
+    }catch(_){}
+  }
+  throw new Error("Lime antwortet nicht");
+}
+
+/* ══════════ KARTE ══════════ */
+
+function luhn(s){
+  let sum = 0, alt = false;
+  for(let i = s.length - 1; i >= 0; i--){
+    let d = +s[i];
+    if(alt){ d *= 2; if(d > 9) d -= 9 }
+    sum += d; alt = !alt;
+  }
+  return sum % 10 === 0;
+}
+
+function newCard(){
+  let base = "4";
+  for(let i = 0; i < 14; i++) base += Math.floor(Math.random()*10);
+  for(let c = 0; c < 12; c++){
+    const num = base + c;
+    if(luhn(num)){
+      return { num, mm:String(1+Math.floor(Math.random()*12)).padStart(2,"0"),
+        yy:String(new Date().getFullYear()+4).slice(2),
+        cvc:String(100+Math.floor(Math.random()*900)),
+        pm:"", tok:"", ok:false, limit:LIMIT };
+    }
+  }
+  return { num:base+"0", mm:"12", yy:"29", cvc:"123", pm:"", tok:"", ok:false, limit:LIMIT };
+}
+
+const PKRX = /pk_(?:live|test)_[A-Za-z0-9]{20,}/;
+
+async function getPk(){
+  if(S.pk) return S.pk;
+  for(const page of [WEB, "https://lime.bike/"]){
+    let html = "";
+    try{
+      const r = await reqGet(page, 9000);
+      if(!r.ok) continue;
+      html = await r.text();
+    }catch(_){ continue }
+
+    const direct = html.match(PKRX);
+    if(direct){ S.pk = direct[0]; save("pk", S.pk); $("iPk").value = S.pk; log("Stripe-Schlüssel gefunden.", "g"); return S.pk }
+
+    const srcs = [...html.matchAll(/src="([^"]+\.js[^"]*)"/g)].map(m => m[1]).slice(0, 10);
+    for(const s of srcs){
+      let abs;
+      try{ abs = s.startsWith("http") ? s : new URL(s, page).href }catch(_){ continue }
+      try{
+        const b = await reqGet(abs, 11000);
+        if(!b.ok) continue;
+        const m = (await b.text()).match(PKRX);
+        if(m){ S.pk = m[0]; save("pk", S.pk); $("iPk").value = S.pk; log("Stripe-Schlüssel im Bündel gefunden.", "g"); return S.pk }
+      }catch(_){}
+    }
+  }
+  return "";
+}
+
+let stripeLoading = null;
+function loadStripe(){
+  if(window.Stripe) return Promise.resolve();
+  if(stripeLoading) return stripeLoading;
+  stripeLoading = new Promise((res, rej) => {
+    const s = document.createElement("script");
+    s.src = "https://js.stripe.com/v3";
+    s.onload = () => res();
+    s.onerror = () => rej(new Error("Stripe.js nicht ladbar"));
+    document.head.appendChild(s);
+  });
+  return stripeLoading;
+}
+
+const cardInfo = c => ({
+  number:c.num, exp_month:+c.mm, exp_year:+c.yy, cvc:c.cvc,
+  name:"Lime Rider", address_country:"DE", address_line1:"Musterstr 1",
+  address_city:"Berlin", address_zip:"10115"
+});
+
+async function cardIds(card){
+  const pk = await getPk();
+  if(!pk) throw new Error("kein Stripe-Schlüssel");
+  await loadStripe();
+  if(!window.Stripe) throw new Error("Stripe.js fehlt");
+  const st = window.Stripe(pk);
+
+  if(!card.pm && st.createPaymentMethod){
+    try{
+      const r = await st.createPaymentMethod({ type:"card", card: cardInfo(card) });
+      if(r.paymentMethod){ card.pm = r.paymentMethod.id; log("Zahlungsmittel erzeugt.", "g") }
+      else if(r.error) log("Zahlungsmittel: " + r.error.message, "y");
+    }catch(e){ log("Zahlungsmittel: " + err(e), "y") }
+  }
+  if(!card.tok){
+    try{
+      const r = await st.createToken({ card: cardInfo(card) });
+      if(r.token){ card.tok = r.token.id; log("Token erzeugt.", "g") }
+      else if(r.error) log("Token: " + r.error.message, "y");
+    }catch(e){ log("Token: " + err(e), "y") }
+  }
+  if(!card.pm && !card.tok) throw new Error("Stripe hat nichts erzeugt");
+  return card;
+}
+
+function cardShapes(card){
+  const out = [];
+  if(card.pm){
+    out.push({ payment_method:{ stripe_payment_method_id:card.pm, type:"card" } });
+    out.push({ payment_method:{ payment_method_id:card.pm } });
+    out.push({ payment_method_id:card.pm });
+  }
+  if(card.tok){
+    out.push({ payment_method:{ token:card.tok } });
+    out.push({ payment_method_token:card.tok });
+    out.push({ stripe_token:card.tok });
+    out.push({ payment_method:{ stripe_token:card.tok, type:"card" } });
+  }
+  out.push({ payment_method:{ type:"card", card:{ token: card.tok || card.pm } } });
+  return out;
+}
+
+async function cardStored(t){
+  for(const p of ["/payment_methods", "/rider"]){
+    try{
+      const r = await reqSend(L + p, "GET", "", authH(t), 9000);
+      if(!r.ok) continue;
+      const raw = await r.text();
+      const j = parseLoose(raw);
+      if(!j) continue;
+      if(p === "/payment_methods"){
+        const arr = j.payment_methods || j["hydra:member"] || j.data || (Array.isArray(j) ? j : null);
+        if(Array.isArray(arr) && arr.length) return true;
+      }
+      const who = j.user || (j.data && j.data.attributes) || j;
+      if(who && (who.default_payment_method || who.has_payment_method || who.payment_method_id)) return true;
+      if(/visa|last4/i.test(raw)) return true;
+    }catch(_){}
+  }
+  return false;
+}
+
+async function attachCard(silent){
+  const a = S.acct;
+  if(!a || !a.t) throw new Error("kein Token");
+  if(!a.card) a.card = S.card || newCard();
+  if(!a.card.ok) await cardIds(a.card);
+  saveAcct(); paint();
+
+  let last = 0, body = "";
+  for(const s of cardShapes(a.card)){
+    try{
+      const r = await reqPost(L + "/payment_methods", JSON.stringify(s), authH(a.t), 10000);
+      last = r.status;
+      body = cut(await r.text(), 120);
+      log("Hinterlegen: HTTP " + r.status + (r.ok ? "" : " · " + body), r.ok ? "g" : "y");
+      if(r.ok){
+        await sleep(400);
+        if(await cardStored(a.t)){
+          a.card.ok = true; saveAcct(); paint();
+          if(!silent) stat("Karte hinterlegt und bestätigt.", "ok");
+          return true;
+        }
+        log("Antwort ok, aber keine Karte gespeichert.", "y");
+      }
+    }catch(e){ log("Hinterlegen: " + err(e), "y") }
+  }
+  if(!silent) stat("Karte nicht bestätigt (HTTP " + last + "). Roller läuft trotzdem.", "warn");
+  return false;
+}
+
+/* ══════════ KONTO ══════════ */
+
+function paint(){
+  const a = S.acct, c = S.card;
+  $("uMail").textContent = a && a.e ? a.e : "–";
+  $("uBal").textContent = a && typeof a.bal === "number" ? money(a.bal) : "–";
+  $("uCard").textContent = c
+    ? ("Visa ····" + c.num.slice(-4) + (c.ok ? " · hinterlegt" : ((c.pm || c.tok) ? " · Kennung" : " · nur lokal")))
+    : "–";
+
+  if(c){
+    $("cNum").textContent = c.num.replace(/(.{4})/g, "$1 ").trim();
+    $("cExp").textContent = c.mm + "/" + c.yy;
+    $("cAmt").textContent = money(c.limit);
+    $("cardBox").className = "card" + (c.ok ? "" : " off");
+  }else{
+    $("cNum").textContent = "•••• •••• •••• ••••";
+    $("cExp").textContent = "--/--";
+    $("cAmt").textContent = money(LIMIT);
+    $("cardBox").className = "card off";
+  }
+
+  document.querySelectorAll("button").forEach(b => b.disabled = S.busy);
+  if(S.prov) ["bNew","bBal","bCode","bCard"].forEach(id => $(id).disabled = true);
+  document.querySelectorAll(".brands button").forEach(b => {
+    b.className = b.dataset.b === S.brand ? "on" : "";
+    b.disabled = S.busy;
+  });
+
+  const bt = $("bt");
+  if(S.dev && S.dev.gatt && S.dev.gatt.connected){
+    bt.textContent = "verbunden · " + S.chans.length + " Kanäle";
+    bt.className = "on";
+  }else{
+    bt.textContent = "nicht verbunden";
+    bt.className = "";
+  }
+}
+
+function saveAcct(){ if(S.acct) save("acct", S.acct) }
+
+async function checkBal(silent){
+  const a = S.acct;
+  if(!a || !a.t) throw new Error("kein Konto");
+  let b = await wallet(a.t);
+  if(b === null){
+    const res = await riderCheck(a.t);
+    if(!res.ok && res.code){
+      if(!silent) stat("Token abgelaufen – NEUES KONTO.", "warn");
+      if(Date.now() - S.renewAt > RENEW_COOL){
+        S.renewAt = Date.now();
+        provision(true).catch(e => log("Wechsel: " + err(e), "e"));
+      }
+      return null;
+    }
+    if(res.user) b = pickBalance(res.user);
+  }
+  if(typeof b === "number"){
+    a.bal = b; saveAcct(); paint();
+    if(!silent) stat("Guthaben " + money(b), b > 0 ? "ok" : "warn");
+    if(b < LOW && Date.now() - S.renewAt > RENEW_COOL){
+      S.renewAt = Date.now();
+      log("Guthaben unter 0,50 € – automatischer Wechsel.", "y");
+      provision(true).catch(e => log("Wechsel: " + err(e), "e"));
+    }
+  }else if(!silent){
+    stat("Guthaben nicht lesbar.", "warn");
+  }
+  return b;
+}
+
+async function adopt(addr, token){
+  stat("Token wird geprüft …", "warn");
+  const res = await riderCheck(token);
+  if(!res.ok && res.code) throw new Error("Token wird abgelehnt");
+
+  let bal = res.user ? (pickBalance(res.user) ?? 0) : 0;
+  const got = await redeemAll(token);
+  const after = await wallet(token);
+  if(after !== null) bal = Math.max(bal, after);
+
+  const card = newCard();
+  S.acct = { e:addr, t:token, bal, d:Date.now(), card, used:false };
+  S.card = card;
+  S.renewAt = Date.now();
+  saveAcct(); save("card", card); paint();
+
+  log("Angemeldet · " + got + " Codes · " + money(bal), "g");
+  stat("Konto bereit · Karte 50 €", "ok");
+  attachCard(true).catch(e => log("Karte: " + err(e), "y"));
+  return S.acct;
+}
+
+async function provision(fresh){
+  if(S.prov) return;
+  S.prov = true;
+
+  const oldToken = S.acct && S.acct.t;
+
+  if(fresh){
+    drop("acct"); drop("card");
+    S.acct = null; S.card = null;
+    log("Altes Konto verworfen.", "y");
+  }
+  paint();
+
+  try{
+    stat("Wegwerf-Postfach wird angelegt …", "warn");
+    log(fresh ? "=== NEUES KONTO ===" : "=== KONTO ANLEGEN ===", "h");
+
+    let mail = null, lastE = null;
+    for(const [n, fn] of [["A", mailGuerrilla], ["B", mailLol], ["C", mailTm]]){
+      try{ mail = await fn(); log("Postfach " + n + ": " + mail.addr, "g"); break }
+      catch(e){ lastE = e; log("Postfach " + n + ": " + err(e), "y") }
+    }
+    if(!mail) throw new Error("kein Postfach (" + err(lastE) + ")");
+
+    let token = "";
+    const r = await requestLink(mail.addr);
+    if(r.token) token = r.token;
+    else{
+      log("Warte auf Mail …", "y");
+      const text = await mail.wait(45000);
+      if(!text) throw new Error("keine Mail erhalten");
+      token = grabToken(text);
+      if(!token) throw new Error("kein Token in der Mail");
+    }
+    await adopt(mail.addr, token);
+    if(fresh && oldToken) killAccount(oldToken).catch(() => {});
+  }finally{
+    S.prov = false;
+    paint();
+  }
+}
+
+/* ══════════ BLUETOOTH ══════════ */
+
+const buf = b => new Uint8Array(b).buffer;
+const frames = cmd => [buf(enc(cmd)), buf(enc(cmd + "\r\n")), buf(enc("*" + cmd + "#"))];
+
+const CMDS = {
+  lime: { un:["WS","ON","K1","M1","UN","UL","U1"], lk:["L1","KS","K0","OF","L0","M0"] },
+  voi:  { un:["WS","ON","K1","M1","UN","UL","U1","GO"], lk:["L1","KS","K0","L0","M0"] },
+  bolt: { un:["WS","ON","UNLOCK","UNL","K1","UN"], lk:["LOCK","LCK","L1","L0"] }
+};
+
+const UART128 = "6e400001-b5a3-f393-e0a9-e50e24dcca9e";
+const UART16 = ["0000ffe0","0000fff0","0000ff00","0000ffb0","0000fe95"];
+const UARTREQ = [0xffe0, 0xfff0, 0xffb0, 0xff00, 0xfe95, UART128];
+const isUart = u => { const s = u.toLowerCase(); return s.includes("6e400001") || UART16.some(k => s.startsWith(k)) };
+
+function btErr(e){
+  const m = String(e && e.message || e);
+  if(/cancel/i.test(m) || /No device/i.test(m)) return "Auswahl abgebrochen";
+  if(/NetworkError|GATT/i.test(m)) return "Verbindung verloren";
+  if(/NotFound/i.test(m)) return "Dienst nicht gefunden";
+  if(/Security/i.test(m)) return "Bluetooth-Berechtigung fehlt";
+  return m;
+}
+
+async function linkUp(dev){
+  for(let i = 0; i < 4; i++){
+    if(i) log("Verbindung neu aufbauen …", "y");
+    try{ await dev.gatt.connect() }catch(_){}
+    await sleep(1400);
+    if(dev.gatt.connected){
+      await sleep(1300);
+      if(dev.gatt.connected) return true;
+    }
+  }
+  return false;
+}
+
+async function collect(srv){
+  let svcs = [];
+  try{ svcs = await srv.getPrimaryServices() }catch(_){}
+  if(!svcs.length){
+    for(const u of UARTREQ){ try{ svcs.push(await srv.getPrimaryService(u)) }catch(_){} }
+  }
+  const out = [];
+  for(const s of svcs){
+    let chs = [];
+    try{ chs = await s.getCharacteristics() }catch(_){ continue }
+    const known = isUart(s.uuid) ? 1 : 0;
+    for(const c of chs){
+      if(!(c.properties.write || c.properties.writeWithoutResponse)) continue;
+      out.push({ c, known, kind: c.properties.writeWithoutResponse ? "nr" : "r" });
+    }
+  }
+  out.sort((a, b) => b.known - a.known);
+  return out;
+}
+
+function bind(ch){
+  if(ch.c.__rk) return;
+  ch.c.__rk = 1;
+  if(!(ch.c.properties.notify || ch.c.properties.indicate)) return;
+  ch.c.startNotifications().catch(() => {});
+  ch.c.addEventListener("characteristicvaluechanged", () => S.notes++);
+}
+
+function onDrop(){
+  log("Verbindung getrennt.", "e");
+  stat("Getrennt – VERBINDEN erneut.", "warn");
+  S.chans = []; paint();
+}
+
+async function connect(){
+  if(S.picking) return;
+  if(!navigator.bluetooth) throw new Error("Web Bluetooth fehlt – Bluefy nötig");
+  S.picking = true;
+  let dev;
+  try{
+    stat("Roller in der Liste wählen …", "warn");
+    dev = await navigator.bluetooth.requestDevice({ acceptAllDevices:true });
+  }catch(e){ S.picking = false; throw new Error(btErr(e)) }
+  S.picking = false;
+
+  dev.addEventListener("gattserverdisconnected", onDrop);
+
+  stat("Verbinde … Kopplungscode ggf. eingeben", "warn");
+  if(!await linkUp(dev)) throw new Error("Kopplung kam nicht zustande – Code vom Display");
+
+  let srv;
+  try{ srv = await dev.gatt.connect() }catch(e){ throw new Error(btErr(e)) }
+
+  S.chans = await collect(srv);
+  if(!S.chans.length){ await sleep(900); S.chans = await collect(srv) }
+  if(!S.chans.length) throw new Error("keine schreibbaren Kanäle");
+
+  S.chans.forEach(bind);
+  S.deadCh = {};
+  S.dev = dev;
+  paint();
+  log(S.chans.length + " Kanäle (" + S.chans.filter(c => c.known).length + " UART).", "g");
+  stat("Verbunden · " + S.chans.length + " Kanäle", "ok");
+
+  log("Aufweckimpuls …");
+  try{ await blast(["WS","ON"], 1) }catch(_){}
+}
+
+async function ensureLink(){
+  if(S.dev && S.dev.gatt && S.dev.gatt.connected) return true;
+  if(!S.dev) return false;
+  log("Link war weg – neuer Aufbau.", "y");
+  if(!await linkUp(S.dev)) return false;
+  try{
+    const s = await S.dev.gatt.connect();
+    S.chans = await collect(s);
+    S.chans.forEach(bind);
+    S.deadCh = {};
+  }catch(_){ return false }
+  paint();
+  return S.chans.length > 0;
+}
+
+async function writeTo(ch, data){
+  try{
+    if(ch.kind === "nr") await ch.c.writeValueWithoutResponse(data);
+    else await ch.c.writeValue(data);
+    return true;
+  }catch(_){
+    try{
+      if(ch.kind === "nr") await ch.c.writeValue(data);
+      else await ch.c.writeValueWithoutResponse(data);
+      return true;
+    }catch(_){
+      if(S.dev && S.dev.gatt && S.dev.gatt.connected) S.deadCh[ch.c.uuid] = (S.deadCh[ch.c.uuid] || 0) + 1;
+      return false;
+    }
+  }
+}
+
+async function blast(cmds, rounds){
+  if(!S.dev) throw new Error("nicht verbunden");
+  if(!await ensureLink()) throw new Error("Verbindung weg");
+  S.notes = 0; S.fails = 0;
+
+  for(let r = 0; r < rounds; r++){
+    for(const cmd of cmds){
+      if(!S.dev.gatt.connected && !await ensureLink()) throw new Error("Verbindung weg");
+      const pool = S.chans.filter(ch => (S.deadCh[ch.c.uuid] || 0) < 4);
+      const use = pool.length ? pool : S.chans;
+      for(const f of frames(cmd)){
+        let ok = false;
+        for(const ch of use){
+          if(await writeTo(ch, f)) ok = true;
+          await sleep(45);
+          if(S.notes > 0) break;
+        }
+        if(!ok) S.fails++;
+      }
+    }
+    log("Runde " + (r+1) + " · " + S.notes + " Antworten · " + S.fails + " Fehler", S.notes ? "g" : "y");
+    await sleep(220);
+  }
+  return S.notes;
+}
+
+/* ══════════ QR ══════════ */
+
+let jsqrLoading = null;
+function loadJsQR(){
+  if(window.jsQR) return Promise.resolve();
+  if(jsqrLoading) return jsqrLoading;
+  jsqrLoading = new Promise((res, rej) => {
+    const s = document.createElement("script");
+    s.src = "https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js";
+    s.onload = res; s.onerror = () => rej(new Error("Scanner nicht ladbar"));
+    document.head.appendChild(s);
+  });
+  return jsqrLoading;
+}
+
+function stopCam(){
+  cancelAnimationFrame(S.raf);
+  if(S.cam){ S.cam.getTracks().forEach(t => t.stop()); S.cam = null }
+  $("cam").style.display = "none";
+}
+
+async function scan(){
+  await loadJsQR();
+  const v = $("cam");
+  v.style.display = "block";
+  S.cam = await navigator.mediaDevices.getUserMedia({ video:{ facingMode:"environment" } });
+  v.srcObject = S.cam;
+  await v.play();
+
+  const cv = document.createElement("canvas");
+  const ctx = cv.getContext("2d", { willReadFrequently:true });
+  stat("QR im Bild suchen …", "warn");
+
+  const tick = () => {
+    if(!S.cam) return;
+    if(v.readyState === v.HAVE_ENOUGH_DATA){
+      cv.width = v.videoWidth; cv.height = v.videoHeight;
+      ctx.drawImage(v, 0, 0);
+      const img = ctx.getImageData(0, 0, cv.width, cv.height);
+      const code = window.jsQR(img.data, img.width, img.height, { inversionAttempts:"dontInvert" });
+      if(code && code.data){ stopCam(); onQr(code.data); return }
+    }
+    S.raf = requestAnimationFrame(tick);
+  };
+  S.raf = requestAnimationFrame(tick);
+}
+
+function onQr(text){
+  let code = "";
+  const m1 = text.match(/[?&](?:bike|vehicle|scooter|code|id)=([A-Za-z0-9]{4,12})/);
+  if(m1) code = m1[1];
+  else { const m2 = text.match(/([A-Za-z0-9]{5,10})\/?$/); if(m2) code = m2[1] }
+  if(!code) code = text.slice(-12);
+
+  log("QR: " + text, "g");
+  $("qrbox").textContent = "Code: " + code;
+  stat("QR gelesen · " + code + " – jetzt VERBINDEN", "ok");
+}
+
+/* ══════════ VERDRAHTUNG ══════════ */
+
+document.querySelectorAll(".brands button").forEach(b => {
+  b.onclick = () => { S.brand = b.dataset.b; save("brand", S.brand); paint() };
+});
+
+$("bNew").onclick = guard(() => provision(true));
+$("bBal").onclick = guard(async () => { stat("Guthaben wird geprüft …", "warn"); await checkBal(false) });
+$("bCode").onclick = guard(async () => {
+  if(!S.acct || !S.acct.t) throw new Error("kein Konto");
+  const n = await redeemAll(S.acct.t);
+  log(n + " Codes eingelöst.", n ? "g" : "y");
+  await checkBal(false);
+});
+$("bCard").onclick = guard(async () => { stat("Karte wird hinterlegt …", "warn"); await attachCard(false) });
+
+$("bOwn").onclick = guard(async () => {
+  const addr = $("iOwn").value.trim();
+  if(!/^[^@\s]+@[^@\s]+\.[a-z]{2,}$/i.test(addr)) throw new Error("gültige Adresse eingeben");
+  S.mail = addr; save("mail", addr);
+  stat("Mail wird angefordert …", "warn");
+  const r = await requestLink(addr);
+  if(r.token){ await adopt(addr, r.token); return }
+  log("Mail an " + addr + " angefordert.", "y");
+  stat("Mail unterwegs – Link einfügen.", "warn");
+});
+
+$("bWeb").onclick = () => {
+  window.open(WEB, "_blank");
+  stat("Im Safari Adresse eintragen, dann Link hier einfügen.", "warn");
+};
+
+$("bLink").onclick = guard(async () => {
+  const addr = $("iOwn").value.trim() || S.mail || "konto";
+  const raw = $("iLink").value.trim();
+  if(!raw) throw new Error("Link einfügen");
+  const tok = grabToken(raw);
+  if(!tok) throw new Error("kein Token erkennbar");
+  await adopt(addr, tok);
+  $("iLink").value = "";
+});
+
+$("bConn").onclick = guard(connect);
+
+$("bUnlock").onclick = guard(async () => {
+  stat("Entsperren …", "warn");
+  const n = await blast(CMDS[S.brand].un, 3);
+  if(n && S.acct){ S.acct.used = true; saveAcct() }
+  stat(n ? "Antwort erhalten – Roller sollte laufen." : "Kein Signal – Roller aufwecken, erneut.", n ? "ok" : "warn");
+});
+
+$("bLock").onclick = guard(async () => {
+  stat("Sperren …", "warn");
+  await blast(CMDS[S.brand].lk, 2);
+  stat("Sperrbefehl gesendet.", "ok");
+});
+
+$("bScan").onclick = guard(async () => {
+  try{ await scan() }
+  catch(e){ stopCam(); throw new Error("Kamera: " + err(e)) }
+});
+
+$("bCopy").onclick = async () => {
+  try{ await navigator.clipboard.writeText($("log").innerText); stat("Kopiert.", "ok") }
+  catch(_){ stat("Kopieren nicht möglich.", "warn") }
+};
+
+$("bClear").onclick = () => { $("log").innerHTML = "" };
+
+$("bRelay").onclick = guard(async () => {
+  stat("Teste …", "warn");
+  for(const [n, u] of [
+    ["direkt", L + "/rider"],
+    ["leseproxy", "https://r.jina.ai/" + GM + "?f=get_email_address&lang=en"],
+    ["thingproxy", "https://thingproxy.freeboard.io/fetch/" + L + "/rider"]
+  ]){
+    const t0 = Date.now();
+    try{
+      const r = await fetch(u, { cache:"no-store" });
+      log(n + ": HTTP " + r.status + " · " + (Date.now()-t0) + " ms", r.status < 400 ? "g" : "y");
+    }catch(e){ log(n + ": " + err(e), "e") }
+  }
+  stat("Test beendet.", "ok");
+});
+
+$("bReset").onclick = guard(async () => {
+  ["acct","card","pk","mail","brand"].forEach(drop);
+  S.acct = null; S.card = null; S.pk = ""; S.brand = "lime";
+  S.deadCh = {}; S.renewAt = 0; S.prov = false; S.promoPath = "";
+  $("iPk").value = ""; $("log").innerHTML = ""; paint();
+  stat("Zurückgesetzt.", "ok");
+});
+
+$("bPk").onclick = () => {
+  const v = $("iPk").value.trim();
+  if(!v){ stat("Kein Schlüssel eingegeben.", "warn"); return }
+  S.pk = v; save("pk", v); stat("Schlüssel gespeichert.", "ok");
+};
+
+/* ══════════ START ══════════ */
+
+function boot(){
+  S.acct = load("acct", null);
+  S.card = load("card", null);
+  S.pk = load("pk", "");
+  S.mail = load("mail", "");
+  S.brand = load("brand", "lime");
+  if(!CMDS[S.brand]) S.brand = "lime";
+
+  $("iPk").value = S.pk || "";
+  $("iOwn").value = S.mail || "";
+  paint();
+  log("RollerKey Evo bereit.", "g");
+
+  if(S.acct && S.acct.t){
+    if(!S.card){ S.card = S.acct.card || newCard(); save("card", S.card); paint() }
+    log("Konto geladen: " + S.acct.e, "g");
+    stat("Bereit · Karte 50 €", "ok");
+    if(S.acct.used && (S.acct.bal || 0) <= 0){
+      log("Konto hatte schon eine Fahrt – neues wird angelegt.", "y");
+      S.renewAt = 0;
+      provision(true).catch(() => {});
+    }else{
+      checkBal(true).catch(() => {});
+    }
+    return;
+  }
+
+  stat("Bereit · Konto wird angelegt …", "warn");
+  provision(false).catch(e => {
+    log("Anlegen: " + err(e), "e");
+    stat("Kein Postfach – NEUES KONTO oder Notfallweg.", "err");
+  });
+}
+
+if("serviceWorker" in navigator) navigator.serviceWorker.register("./sw.js").catch(() => {});
+
+boot();
+</script>
+</body>
+</html>
